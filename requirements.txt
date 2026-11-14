@@ -1,0 +1,6 @@
+streamlit
+pandas
+plotly
+pillow
+arabic-reshaper
+python-bidi
