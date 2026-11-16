@@ -121,7 +121,7 @@ with st.sidebar:
 # ============================================================
 # التبويبات
 # ============================================================
-tabs_names = ["🔍 البحث والتشخيص", "🔤 البحث بالكلمة", "➕ إضافة عطل", "🧩 إدارة الأسباب", "✏️ حذف وتعديل", "📊 الإحصائيات", "🖼️ رفع صورة", "📋 عرض الكل"]
+tabs_names = ["🔍 البحث والتشخيص", "🔤 البحث بالكلمة", "➕ إضافة عطل", "🧩 إدارة الأسباب", "✏️ حذف وتعديل", "📊 الإحصائيات", "🖼️ رفع صورة", "📋 عرض الكل", "🤖 الذكاء الاصطناعي"]
 if user_role != "admin":
     tabs_names = ["🔍 البحث والتشخيص", "🔤 البحث بالكلمة", "📊 الإحصائيات", "📋 عرض الكل"]
 
@@ -457,7 +457,58 @@ with tab_map.get("📋 عرض الكل", st.empty()):
         st.dataframe(display_df, width='stretch', height=450)
         st.caption(f"إجمالي الأعطال: {len(all_faults)}")
     except Exception as e: st.error(f"خطأ: {e}")
+# ============================================================
+# التبويب 9: الذكاء الاصطناعي (Computer Vision)
+# ============================================================
+with tab_map.get("🤖 الذكاء الاصطناعي", st.empty()):
+    st.markdown("### 🤖 تحليل الصور بالذكاء الاصطناعي")
+    st.markdown("ارفع صورة للوحة دوائر إلكترونية، وسيقوم النموذج بالتعرف على مكوناتها.")
 
+    from ultralytics import YOLO
+    import numpy as np
+
+    # تحميل النموذج (مع التخزين المؤقت لتجنب التحميل المتكرر)
+    @st.cache_resource
+    def load_pcb_model():
+        try:
+            return YOLO("YoloV12-Medium-160-FineTuned.pt")
+        except Exception as e:
+            st.error(f"❌ لم يتم العثور على ملف النموذج. تأكد من تحميله. الخطأ: {e}")
+            return None
+
+    model = load_pcb_model()
+
+    if model is None:
+        st.stop()
+
+    uploaded_file_ai = st.file_uploader("📸 اختر صورة للوحة الدوائر:", type=["jpg", "jpeg", "png"], key="ai_uploader")
+
+    if uploaded_file_ai is not None:
+        # عرض الصورة الأصلية
+        image_ai = Image.open(uploaded_file_ai)
+        st.image(image_ai, caption="الصورة الأصلية", width='stretch')
+
+        # تحويل الصورة إلى مصفوفة
+        img_array_ai = np.array(image_ai)
+
+        with st.spinner("🔍 جاري تحليل الصورة..."):
+            results_ai = model(img_array_ai)
+            res_plotted_ai = results_ai[0].plot()
+
+            st.success("✅ تم تحليل الصورة!")
+            st.image(res_plotted_ai, caption="نتيجة التحليل", width='stretch')
+
+            st.markdown("### 🔍 القطع التي تم اكتشافها:")
+            names_ai = results_ai[0].names
+            boxes_ai = results_ai[0].boxes
+
+            if len(boxes_ai) == 0:
+                st.warning("⚠️ لم يتم اكتشاف أي قطع معروفة في الصورة.")
+            else:
+                for box in boxes_ai:
+                    class_id = int(box.cls[0])
+                    confidence = float(box.conf[0])
+                    st.write(f"- **{names_ai[class_id]}** (بدقة: {confidence*100:.1f}%)")
 # ============================================================
 # تذييل
 # ============================================================
