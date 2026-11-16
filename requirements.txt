@@ -7,4 +7,3 @@ sqlalchemy
 psycopg[binary]
 ultralytics
 opencv-python-headless
---force-reinstall opencv-python-headless
