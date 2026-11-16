@@ -468,12 +468,19 @@ with tab_map.get("🤖 الذكاء الاصطناعي", st.empty()):
     import numpy as np
 
     # تحميل النموذج (مع التخزين المؤقت لتجنب التحميل المتكرر)
+    from huggingface_hub import hf_hub_download
+
     @st.cache_resource
     def load_pcb_model():
         try:
-            return YOLO("YoloV12-Medium-160-FineTuned.pt")
+            # تحميل النموذج تلقائياً من Hugging Face
+            model_path = hf_hub_download(
+                repo_id="JcProg/PCBInspect-AI", 
+                filename="YoloV12-Medium-160-FineTuned.pt"
+            )
+            return YOLO(model_path)
         except Exception as e:
-            st.error(f"❌ لم يتم العثور على ملف النموذج. تأكد من تحميله. الخطأ: {e}")
+            st.error(f"❌ فشل تحميل النموذج: {e}")
             return None
 
     model = load_pcb_model()
