@@ -2,8 +2,8 @@ streamlit
 pandas
 plotly
 pillow
-arabic-reshaper
-python-bidi
+sqlalchemy
+psycopg[binary]
 ultralytics
 opencv-python-headless
 huggingface_hub
