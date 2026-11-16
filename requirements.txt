@@ -1,9 +1,9 @@
-streamlit[auth]==1.56.0
-Authlib==1.6.11
+streamlit
 pandas
 plotly
 pillow
-sqlalchemy
-psycopg[binary]
+arabic-reshaper
+python-bidi
 ultralytics
 opencv-python-headless
+huggingface_hub
