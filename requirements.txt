@@ -5,3 +5,4 @@ plotly
 pillow
 sqlalchemy
 psycopg[binary]
+ultralytics
