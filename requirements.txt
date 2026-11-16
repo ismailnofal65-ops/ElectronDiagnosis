@@ -1,4 +1,6 @@
 streamlit
+authlib==1.6.11
+httpx
 pandas
 plotly
 pillow
